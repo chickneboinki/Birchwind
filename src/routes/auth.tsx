@@ -18,6 +18,7 @@ function AuthPage() {
   const [mode, setMode] = useState<"in" | "up">("in");
   const [username, setUsername] = useState("Chance");
   const [password, setPassword] = useState("");
+  const [adminCode, setAdminCode] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { if (session) navigate({ to: "/chat", replace: true }); }, [session, navigate]);
@@ -32,6 +33,21 @@ function AuthPage() {
       if (mode === "in") {
         const { error } = await supabase.auth.signInWithPassword({ email: usernameEmail(clean), password });
         if (error) throw error;
+        if (adminCode.trim()) {
+          const response = await fetch("/api/admin-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: adminCode, username: clean }),
+          });
+          if (!response.ok) {
+            await supabase.auth.signOut();
+            throw new Error("Admin code is invalid for this account.");
+          }
+          localStorage.setItem("birchwind-admin-unlocked", "true");
+          toast.success("Admin access unlocked.");
+        } else {
+          localStorage.removeItem("birchwind-admin-unlocked");
+        }
       } else {
         const { data, error } = await supabase.functions.invoke("birchwind-auth", { body: { action: "signup", username: clean, password } });
         if (error) throw error;
@@ -64,6 +80,7 @@ function AuthPage() {
               <input aria-label="Password" autoComplete="current-password" type="password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-slate-300" />
               <button aria-label="Sign in" type="submit" disabled={busy} className="h-full px-3 hover:bg-white/10 disabled:opacity-50"><ArrowRight className="size-5" /></button>
             </div>
+            <input aria-label="Optional admin access code" autoComplete="off" type="password" value={adminCode} onChange={e => setAdminCode(e.target.value)} placeholder="Admin access code (optional)" className="h-11 w-full rounded-md border border-white/20 bg-[#06133c]/90 px-3 text-sm outline-none placeholder:text-slate-300 focus:ring-2 focus:ring-sky-300" />
             <button type="button" onClick={() => setMode("up")} className="w-full pt-3 text-sm text-white/85 hover:text-white">Create an account</button>
           </form>
         ) : (
@@ -76,7 +93,7 @@ function AuthPage() {
             <button type="button" onClick={() => setMode("in")} className="w-full text-sm text-white/80">Back to sign in</button>
           </form>
         )}
-        <p className="mt-7 text-center text-xs text-white/70">Sign in with your account password to continue.</p>
+        <p className="mt-7 text-center text-xs text-white/70">Sign in with your account password. Admin access code is optional.</p>
       </div>
       <div className="relative z-10 flex items-center justify-end gap-5 px-7 pb-6 text-white/90">
         <span className="flex items-center gap-2 text-xs"><Wifi className="size-4" /> Birchwind</span>
