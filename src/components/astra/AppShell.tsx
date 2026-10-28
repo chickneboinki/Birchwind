@@ -19,6 +19,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { DesktopWorkspace } from "./DesktopWorkspace";
 
 const ShellCtx = createContext<{ openMenu: () => void; openCommand: () => void }>({
   openMenu: () => {},
@@ -66,6 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const navigate = useNavigate();
+  const [isWindowFrame] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("window") === "1");
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -99,40 +101,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => clearInterval(t);
   }, [prefs.tabCloak, prefs.cloakTitle]);
 
-  const launcher = prefs.layout === "launcher";
+  if (isWindowFrame) return <>{children}</>;
 
-  return (
-    <ShellCtx.Provider value={{ openMenu: () => setMobileOpen(true), openCommand: () => setCmdOpen(true) }}>
-      <div className="windows-shell flex h-dvh overflow-hidden bg-background">
-        {launcher ? (
-          <IconRail onSearch={() => setCmdOpen(true)} />
-        ) : (
-          <aside className="hidden w-64 shrink-0 border-r border-sidebar-border bg-sidebar md:flex">
-            <SidebarBody onNavigate={() => {}} onSearch={() => setCmdOpen(true)} />
-          </aside>
-        )}
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-          <SheetContent side="left" className="w-[82vw] max-w-72 border-sidebar-border bg-sidebar p-0">
-            <SheetTitle className="sr-only">Menu</SheetTitle>
-            <SidebarBody
-              onNavigate={() => setMobileOpen(false)}
-              onSearch={() => {
-                setMobileOpen(false);
-                setCmdOpen(true);
-              }}
-            />
-          </SheetContent>
-        </Sheet>
-        <main className="windows-main flex min-w-0 flex-1 flex-col">
-          {launcher && <TopBar />}
-          <div className="min-h-0 flex-1 overflow-hidden"><RoomFollower />{children}</div>
-          <DesktopTaskbar onSearch={() => setCmdOpen(true)} />
-        </main>
-      </div>
-      <CommandMenu open={cmdOpen} onOpenChange={setCmdOpen} />
-    </ShellCtx.Provider>
-  );
-}
+  return <DesktopWorkspace />;}
 
 
 function DesktopTaskbar({ onSearch }: { onSearch: () => void }) {
