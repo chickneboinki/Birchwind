@@ -156,7 +156,7 @@ function IconRail({ onSearch }: { onSearch: () => void }) {
   const active = { className: "bg-sidebar-accent text-star" };
   return (
     <aside className="hidden w-14 shrink-0 flex-col items-center gap-1 border-r border-sidebar-border bg-sidebar py-3 md:flex">
-      {RAIL.map((r) => (
+      {RAIL.filter((r) => r.id === "store" || r.id === "home" || installedApps.includes(r.id)).map((r) => (
         <Link key={r.to} to={r.to} title={r.label} aria-label={r.label} className={railLink} activeProps={active}>
           <r.icon className="size-4" />
         </Link>
