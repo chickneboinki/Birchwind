@@ -26,6 +26,42 @@ const ShellCtx = createContext<{ openMenu: () => void; openCommand: () => void }
 });
 export const useShell = () => useContext(ShellCtx);
 
+function useInstalledApps() {
+  const [installedApps, setInstalledApps] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const value: unknown = JSON.parse(window.localStorage.getItem("birchwind-installed-apps") || "[]");
+      return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    const update = (e: Event) => {
+      const detail = (e as CustomEvent<string[]>).detail;
+      if (Array.isArray(detail)) {
+        setInstalledApps(detail.filter((item): item is string => typeof item === "string"));
+        return;
+      }
+      try {
+        const value: unknown = JSON.parse(window.localStorage.getItem("birchwind-installed-apps") || "[]");
+        setInstalledApps(Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []);
+      } catch {
+        setInstalledApps([]);
+      }
+    };
+    window.addEventListener("birchwind:apps-changed", update);
+    window.addEventListener("storage", update);
+    return () => {
+      window.removeEventListener("birchwind:apps-changed", update);
+      window.removeEventListener("storage", update);
+    };
+  }, []);
+
+  return installedApps;
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -113,12 +149,7 @@ function DesktopTaskbar({ onSearch }: { onSearch: () => void }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   useEffect(() => { const id = window.setInterval(() => setNow(new Date()), 15000); return () => window.clearInterval(id); }, []);
-  useEffect(() => {
-    const update = (e: Event) => { const detail = (e as CustomEvent<string[]>).detail; if (Array.isArray(detail)) setInstalledApps(detail); else { try { setInstalledApps(JSON.parse(localStorage.getItem("birchwind-installed-apps") || "[]")); } catch { setInstalledApps([]); } } };
-    window.addEventListener("birchwind:apps-changed", update);
-    window.addEventListener("storage", update);
-    return () => { window.removeEventListener("birchwind:apps-changed", update); window.removeEventListener("storage", update); };
-  }, []);
+  const installedApps = useInstalledApps();
   useEffect(() => { setStartOpen(false); setQuickOpen(false); }, [path]);
   const open = (to: (typeof RAIL)[number]["to"]) => navigate({ to });
   const tile = (label: string, icon: ReactNode, active: boolean, toggle: () => void) => <button key={label} onClick={toggle} aria-pressed={active} className={cn("flex min-h-16 items-center gap-3 rounded-xl border p-3 text-left transition", active ? "border-primary/30 bg-primary text-primary-foreground" : "bg-background hover:bg-accent")}><span>{icon}</span><span className="text-xs font-medium">{label}</span></button>;
@@ -152,6 +183,7 @@ const RAIL = [
 ] as const;
 
 function IconRail({ onSearch }: { onSearch: () => void }) {
+  const installedApps = useInstalledApps();
   const railLink = "flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-sidebar-accent hover:text-foreground";
   const active = { className: "bg-sidebar-accent text-star" };
   return (
