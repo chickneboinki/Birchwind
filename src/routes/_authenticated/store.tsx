@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Bot, Film, Gamepad2, Globe, Music, Search, ShoppingBag, Check, Download, ArrowUpRight, FileText } from "lucide-react";
+import { Bot, Film, Gamepad2, Globe, Music, Search, ShoppingBag, Check, Download, ArrowUpRight, FileText, AudioLines } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/store")({
@@ -9,7 +9,8 @@ export const Route = createFileRoute("/_authenticated/store")({
 });
 
 const APPS = [
-  { id: "ai", name: "Birch AI", category: "AI & Productivity", description: "Chat, voice conversations, saved memory, and AI tools.", to: "/chat", icon: Bot, color: "bg-violet-500/15 text-violet-500", included: true },
+  { id: "ai", name: "Birch AI", category: "AI & Productivity", description: "Chat, saved memory, and AI tools.", to: "/chat", icon: Bot, color: "bg-violet-500/15 text-violet-500", included: true },
+  { id: "voice", name: "Voice", category: "AI & Productivity", description: "Talk with BirchBlock using voice conversations and spoken replies.", to: "/voice", icon: AudioLines, color: "bg-fuchsia-500/15 text-fuchsia-500", included: true },
   { id: "movies", name: "Movies & TV", category: "Entertainment", description: "Discover films and series, browse details, and launch available watch sources.", to: "/movies", icon: Film, color: "bg-rose-500/15 text-rose-500", included: true },
   { id: "music", name: "Music", category: "Entertainment", description: "Search artists, albums, and tracks; build playlists and listen to previews.", to: "/music", icon: Music, color: "bg-emerald-500/15 text-emerald-500", included: true },
   { id: "notes", name: "Notes", category: "Productivity", description: "Create, pin, search, and auto-save notes on this device.", to: "/notes", icon: FileText, color: "bg-amber-500/15 text-amber-500", included: true },
