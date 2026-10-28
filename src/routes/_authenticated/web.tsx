@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { searchUrl, usePrefs, type Prefs } from "@/lib/astra/prefs";
+import { usePrefs, type Prefs } from "@/lib/astra/prefs";
 import { openProxied } from "@/lib/astra/proxy";
 import { ExternalLink, Globe, Plus, Search, X } from "lucide-react";
 import { webSearch } from "@/lib/astra/web.functions";
@@ -45,13 +45,11 @@ function Web() {
       patch(id, { url, title: new URL(url).hostname, query: q });
       return;
     }
-    if (prefs.searchEngine === "astra") {
-      patch(id, { loading: true, query: q, title: q, url: null });
-      const { results } = await search({ data: { q } }).catch(() => ({ results: [] as Result[] }));
-      patch(id, { results, loading: false });
-      return;
-    }
-    patch(id, { url: searchUrl(q, prefs.searchEngine)!, title: q, query: q, results: null });
+    // Search terms should render actual result cards inside Birchwind. Sending
+    // Google/Bing result pages into an iframe is commonly blocked by frame policy.
+    patch(id, { loading: true, query: q, title: q, url: null, results: null });
+    const { results } = await search({ data: { q } }).catch(() => ({ results: [] as Result[] }));
+    patch(id, { results, loading: false });
   }
 
   function newTab() {
