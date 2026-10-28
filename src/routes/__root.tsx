@@ -40,6 +40,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold text-foreground">This page didn't load</h1>
         <p className="mt-2 text-sm text-muted-foreground">Something went wrong. Try again or head home.</p>
+        <details className="mt-4 rounded-md border border-input p-3 text-left text-xs text-muted-foreground"><summary className="cursor-pointer">Technical details</summary><pre className="mt-2 whitespace-pre-wrap break-words">{error instanceof Error ? error.message : String(error)}</pre></details>
         <div className="mt-6 flex justify-center gap-2">
           <button
             onClick={() => {
