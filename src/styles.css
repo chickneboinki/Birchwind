@@ -204,3 +204,36 @@ html[data-theme="sunset"] { --background: oklch(0.18 0.03 10); --foreground: okl
 html[data-theme="mono"] { --background: oklch(0.15 0 0); --foreground: oklch(0.96 0 0); --card: oklch(0.19 0 0); --popover: oklch(0.19 0 0); --secondary: oklch(0.25 0 0); --muted: oklch(0.25 0 0); --accent: oklch(0.25 0 0); --muted-foreground: oklch(0.66 0 0); --border: oklch(0.25 0 0); --input: oklch(0.25 0 0); --sidebar: oklch(0.19 0 0); --sidebar-accent: oklch(0.25 0 0); --sidebar-border: oklch(0.25 0 0); --bubble: oklch(0.25 0 0); --primary: oklch(0.95 0 0); --star: oklch(0.95 0 0); --ring: oklch(0.95 0 0); --sidebar-primary: oklch(0.95 0 0); }
 html[data-theme="candy"] { --background: oklch(0.97 0.02 350); --foreground: oklch(0.25 0.05 350); --card: oklch(0.99 0.01 350); --popover: oklch(0.99 0.01 350); --secondary: oklch(0.92 0.04 350); --muted: oklch(0.92 0.04 350); --accent: oklch(0.92 0.04 350); --muted-foreground: oklch(0.5 0.06 350); --border: oklch(0.92 0.04 350); --input: oklch(0.92 0.04 350); --sidebar: oklch(0.99 0.01 350); --sidebar-accent: oklch(0.92 0.04 350); --sidebar-border: oklch(0.92 0.04 350); --bubble: oklch(0.92 0.04 350); --primary: oklch(0.65 0.2 355); --star: oklch(0.65 0.2 355); --ring: oklch(0.65 0.2 355); --sidebar-primary: oklch(0.65 0.2 355); }
 html[data-theme="dracula"] { --background: oklch(0.18 0.03 290); --foreground: oklch(0.94 0.02 290); --card: oklch(0.22 0.035 290); --popover: oklch(0.22 0.035 290); --secondary: oklch(0.29 0.045 290); --muted: oklch(0.29 0.045 290); --accent: oklch(0.29 0.045 290); --muted-foreground: oklch(0.7 0.05 290); --border: oklch(0.29 0.045 290); --input: oklch(0.29 0.045 290); --sidebar: oklch(0.22 0.035 290); --sidebar-accent: oklch(0.29 0.045 290); --sidebar-border: oklch(0.29 0.045 290); --bubble: oklch(0.29 0.045 290); --primary: oklch(0.76 0.14 300); --star: oklch(0.76 0.14 300); --ring: oklch(0.76 0.14 300); --sidebar-primary: oklch(0.76 0.14 300); }
+
+
+/* Birchwind Windows-inspired desktop shell */
+.windows-shell {
+  background:
+    radial-gradient(ellipse at 18% 12%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 42%),
+    radial-gradient(ellipse at 82% 78%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 40%),
+    var(--background);
+}
+.windows-main { min-height: 0; }
+.windows-titlebar {
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(22px);
+}
+.windows-taskbar {
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--card) 86%, transparent);
+  backdrop-filter: blur(24px) saturate(1.25);
+  box-shadow: 0 -8px 28px rgb(0 0 0 / .04);
+}
+.windows-taskbar button { transition: background-color .15s ease, transform .15s ease; }
+.windows-taskbar button:active { transform: scale(.96); }
+.windows-start-button {
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+  background: color-mix(in srgb, var(--primary) 9%, var(--card));
+  color: var(--primary);
+}
+.windows-start-button:hover { background: color-mix(in srgb, var(--primary) 15%, var(--card)); }
+.windows-shell input[type="range"] { accent-color: var(--primary); }
+@media (max-width: 640px) {
+  .windows-taskbar { padding-inline: .45rem; gap: .2rem; }
+  .windows-taskbar nav { justify-content: flex-start; }
+}

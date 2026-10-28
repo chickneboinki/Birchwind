@@ -29,7 +29,7 @@ export type Prefs = {
 };
 
 export const DEFAULT_PREFS: Prefs = {
-  layout: "classic",
+  layout: "launcher",
   accent: "star",
   palette: "default",
   density: "comfortable",
