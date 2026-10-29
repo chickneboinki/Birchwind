@@ -91,10 +91,16 @@ async function audiusCatalog(q?: string): Promise<any[]> {
 
 async function handle({ request }: { request: Request }) {
   const url = new URL(request.url);
-  if (!(await authed(request, url))) return new Response("Unauthorized", { status: 401 });
+  const op = url.searchParams.get("op") ?? "";
+  // Catalog results and artwork are public metadata. Playback/resolve endpoints
+  // still require a valid session token.
+  const publicOps = new Set(["home", "search", "album", "artist", "art"]);
+  if (!publicOps.has(op) && !(await authed(request, url))) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   const q = encodeURIComponent((url.searchParams.get("q") ?? "").slice(0, 200));
 
-  switch (url.searchParams.get("op")) {
+  switch (op) {
     case "home": {
       const d = await dz("/chart/0?limit=30");
       const tracks = (d.tracks?.data ?? []).map((t: any) => track(t));
