@@ -40,7 +40,7 @@ function NewChat() {
   const name = user?.user_metadata?.["full_name"]?.split(" ")[0] ?? user?.email?.split("@")[0];
 
   return (
-    <div className="flex h-full flex-col sky">
+    <div className="windows-chat flex h-full flex-col sky">
       <header className="flex h-12 items-center px-3 md:hidden">
         <MobileMenuButton />
       </header>
