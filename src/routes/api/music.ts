@@ -66,6 +66,29 @@ const albumOf = (a: any) => ({ id: String(a.id), title: a.title ?? "", artist: a
 const artistOf = (a: any) => ({ id: String(a.id), name: a.name ?? "", art: a.picture_big ?? "", fans: a.nb_fan ?? 0 });
 const id = (v: string | null) => (/^\d{1,15}$/.test(v ?? "") ? v : null);
 
+// Deezer sometimes denies server-side catalog requests. Audius is a real,
+// public catalog and stream API, so use it as a live fallback rather than
+// returning an empty music home/search screen.
+async function audiusCatalog(q?: string): Promise<any[]> {
+  const endpoint = q
+    ? `https://api.audius.co/v1/tracks/search?query=${encodeURIComponent(q)}&app_name=birchblock&limit=30`
+    : "https://api.audius.co/v1/tracks/trending?app_name=birchblock&limit=30";
+  const response = await fetch(endpoint, { headers: UA }).catch(() => null);
+  if (!response?.ok) return [];
+  const data: any = await response.json().catch(() => ({}));
+  return (data.data ?? []).filter((t: any) => t && t.id && t.title).map((t: any) => ({
+    id: String(t.id),
+    title: t.title ?? "",
+    artist: t.user?.name ?? "",
+    artistId: "",
+    album: t.release_title ?? "",
+    albumId: "",
+    art: t.artwork?.\"480x480\" ?? t.artwork?.\"150x150\" ?? "",
+    duration: Math.max(0, Math.floor(t.duration ?? 0)),
+    preview: "",
+  }));
+}
+
 async function handle({ request }: { request: Request }) {
   const url = new URL(request.url);
   if (!(await authed(request, url))) return new Response("Unauthorized", { status: 401 });
@@ -74,15 +97,20 @@ async function handle({ request }: { request: Request }) {
   switch (url.searchParams.get("op")) {
     case "home": {
       const d = await dz("/chart/0?limit=30");
-      return json({
-        tracks: (d.tracks?.data ?? []).map((t: any) => track(t)),
+      const tracks = (d.tracks?.data ?? []).map((t: any) => track(t));
+      if (tracks.length) return json({
+        tracks,
         albums: (d.albums?.data ?? []).map(albumOf),
         artists: (d.artists?.data ?? []).map(artistOf),
       }, 1800);
+      return json({ tracks: await audiusCatalog(), albums: [], artists: [] }, 600);
     }
     case "search": {
+      const term = (url.searchParams.get("q") ?? "").slice(0, 200);
       const [t, al, ar] = await Promise.all([dz(`/search?q=${q}&limit=30`), dz(`/search/album?q=${q}&limit=20`), dz(`/search/artist?q=${q}&limit=12`)]);
-      return json({ tracks: (t.data ?? []).map((x: any) => track(x)), albums: (al.data ?? []).map(albumOf), artists: (ar.data ?? []).map(artistOf) });
+      const tracks = (t.data ?? []).map((x: any) => track(x));
+      if (tracks.length) return json({ tracks, albums: (al.data ?? []).map(albumOf), artists: (ar.data ?? []).map(artistOf) });
+      return json({ tracks: await audiusCatalog(term), albums: [], artists: [] }, 300);
     }
     case "album": {
       const i = id(url.searchParams.get("id"));
