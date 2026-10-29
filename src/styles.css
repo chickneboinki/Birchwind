@@ -313,3 +313,52 @@ html[data-theme="dracula"] { --background: oklch(0.18 0.03 290); --foreground: o
   .windows-settings-heading { align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) { .windows-settings, .windows-home-app, .windows-search-result { animation: none; } }
+
+/* Cohesive, native-feeling surfaces for the remaining standalone apps */
+.windows-games, .windows-notes, .windows-store, .windows-music, .windows-movies, .windows-voice, .windows-memory, .windows-chat {
+  min-width: 0;
+  color: var(--foreground);
+  animation: bw-page-in .22s cubic-bezier(.2,.75,.25,1) both;
+}
+.windows-games > header,
+.windows-music > header,
+.windows-voice > header {
+  background: color-mix(in oklab, var(--card) 72%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.windows-games button, .windows-notes button, .windows-store button,
+.windows-music button, .windows-movies button, .windows-voice button,
+.windows-memory button, .windows-chat button {
+  -webkit-tap-highlight-color: transparent;
+}
+.windows-games button:focus-visible, .windows-notes button:focus-visible,
+.windows-store button:focus-visible, .windows-music button:focus-visible,
+.windows-movies button:focus-visible, .windows-voice button:focus-visible,
+.windows-memory button:focus-visible, .windows-chat button:focus-visible {
+  outline: 2px solid rgba(72, 156, 230, .8);
+  outline-offset: 2px;
+}
+.windows-games img, .windows-store article, .windows-notes aside button {
+  transition: transform .2s cubic-bezier(.2,.75,.25,1), box-shadow .2s ease, border-color .2s ease;
+}
+.windows-games button:hover { border-color: color-mix(in oklab, #60a5fa 35%, var(--border)); }
+.windows-store article:hover { transform: translateY(-2px); }
+.windows-notes aside button:hover { transform: translateX(2px); }
+.windows-notes aside { background: color-mix(in oklab, var(--card) 78%, transparent); }
+.windows-notes textarea, .windows-notes input { caret-color: #60a5fa; }
+.windows-chat .sky { background-size: auto; }
+.windows-memory form, .windows-memory article, .windows-voice section,
+.windows-music section, .windows-movies article {
+  border-radius: 1rem;
+}
+.windows-store article, .windows-memory article {
+  box-shadow: 0 6px 24px rgba(0,0,0,.035);
+}
+.windows-music button:hover, .windows-movies button:hover, .windows-voice button:hover {
+  transition: transform .16s ease, background-color .16s ease, border-color .16s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .windows-games, .windows-notes, .windows-store, .windows-music, .windows-movies, .windows-voice, .windows-memory, .windows-chat { animation: none; }
+  .windows-store article:hover, .windows-notes aside button:hover { transform: none; }
+}
