@@ -36,7 +36,7 @@ function Notes() {
   function add() { const n = makeNote(); setNotes((all) => [n, ...all]); setActiveId(n.id); }
   function remove(id: string) { const rest = notes.filter((n) => n.id !== id); setNotes(rest); if (activeId === id) setActiveId(rest[0]?.id || ""); }
 
-  return <div className="flex h-full min-h-0 bg-background">
+  return <div className="windows-notes flex h-full min-h-0 bg-background">
     <aside className="flex w-64 shrink-0 flex-col border-r bg-card/70 sm:w-72">
       <div className="flex items-center gap-2 border-b p-4"><FileText className="size-5 text-primary" /><div className="flex-1"><h1 className="font-semibold">Notes</h1><p className="text-xs text-muted-foreground">{notes.length} saved notes</p></div><button onClick={add} className="rounded-lg bg-primary p-2 text-primary-foreground" aria-label="Create note"><Plus className="size-4" /></button></div>
       <label className="m-3 flex items-center gap-2 rounded-lg border bg-background px-3 py-2"><Search className="size-4 text-muted-foreground" /><input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search notes" className="w-full bg-transparent text-sm outline-none" /></label>
