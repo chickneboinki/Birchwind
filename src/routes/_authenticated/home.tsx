@@ -45,17 +45,17 @@ function Home() {
         {p.showClock && (
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card/70 px-4 py-2 text-sm text-muted-foreground shadow-sm"><span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,.65)]" />{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</div>
         )}
-        <h1 className={cn("windows-home-title text-6xl font-semibold tracking-tight md:text-8xl", p.glowTitle && "title-glow")}>{p.homeName === "astra" || !p.homeName ? "birchblock" : p.homeName}</h1>
+        <h1 className={cn("windows-home-title text-6xl font-semibold tracking-tight md:text-8xl", p.glowTitle && "title-glow")}>{p.homeName === "astra" || !p.homeName ? "birchwind" : p.homeName}</h1>
         <p className="mt-3 text-base text-muted-foreground">{p.tagline}</p>
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (q.trim()) navigate({ to: "/web", search: { q: q.trim() } });
+            if (q.trim()) { const query = q.trim(); const app = APPS.find((a) => a.label.toLowerCase().includes(query.toLowerCase())); if (/settings|appearance|theme|personalization|privacy|proxy/i.test(query)) navigate({ to: "/settings" }); else if (app) navigate({ to: app.to }); else navigate({ to: "/web", search: { q: query } }); }
           }}
           className="windows-search-box mt-8 flex w-full max-w-2xl items-center gap-3 rounded-2xl border bg-card/80 px-5 py-4 shadow-lg backdrop-blur-xl"
         >
           <Search className="size-4 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search apps, settings, the web, and more" className="flex-1 bg-transparent text-sm outline-none" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search apps, settings, or the web" className="flex-1 bg-transparent text-sm outline-none" />
         </form>
         <div className="mt-12 grid w-full max-w-3xl grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-7">
           {APPS.map((a) => (
@@ -66,8 +66,8 @@ function Home() {
               <span className="text-xs font-medium">{a.label}</span>
             </Link>
           ))}
-          <Link to="/settings" className="group flex w-16 flex-col items-center gap-2">
-            <span className="flex size-14 items-center justify-center rounded-full border bg-card/60 text-muted-foreground transition group-hover:border-star">
+          <Link to="/settings" className="windows-home-app group flex min-w-0 flex-col items-center gap-3 rounded-2xl border border-transparent p-3 transition hover:border-border hover:bg-card/70">
+            <span className="flex size-14 items-center justify-center rounded-2xl border bg-card shadow-sm transition group-hover:-translate-y-1 group-hover:border-sky-400/50 group-hover:shadow-lg">
               <LayoutGrid className="size-5" />
             </span>
             <span className="text-xs text-muted-foreground">Layout</span>
