@@ -90,7 +90,7 @@ function VoicePage() {
   }[v.status];
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="windows-voice flex h-full flex-col">
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-3 md:px-6">
         <MobileMenuButton />
         <h1 className="text-sm font-medium">Voice</h1>
