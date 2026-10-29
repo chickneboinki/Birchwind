@@ -144,7 +144,9 @@ export function usePrefs(): Prefs {
     (f) => {
       load();
       subs.add(f);
-      return () => subs.delete(f);
+      const onStorage = (event: StorageEvent) => { if (event.key === KEY) { loaded = false; load(); subs.forEach((notify) => notify()); } };
+      window.addEventListener("storage", onStorage);
+      return () => { subs.delete(f); window.removeEventListener("storage", onStorage); };
     },
     () => (load(), state),
     () => DEFAULT_PREFS,
