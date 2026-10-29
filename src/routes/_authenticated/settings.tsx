@@ -127,6 +127,18 @@ function SettingsPage() {
                 ]}
               />
             </Card>
+            <Card title="Dashboard layout">
+              <Row title="Choose your desktop" desc="Switch the whole desktop between Windows and console-style layouts."><span className="text-xs text-muted-foreground">{p.desktopMode === "ps5" ? "PS5-inspired" : p.desktopMode === "xbox" ? "Xbox-inspired" : "Windows"}</span></Row>
+              <div className="grid gap-2 p-3 sm:grid-cols-3">
+                {([{v:"windows",label:"Windows",sub:"Floating windows and desktop icons"},{v:"ps5",label:"PS5 style",sub:"Cinematic blue console dashboard"},{v:"xbox",label:"Xbox style",sub:"Green dashboard and quick launch"}] as const).map((mode) => <button key={mode.v} onClick={() => set({desktopMode:mode.v})} className={cn("rounded-xl border p-3 text-left transition hover:-translate-y-0.5",p.desktopMode===mode.v?"border-sky-500 bg-sky-500/10 ring-1 ring-sky-500/30":"hover:bg-accent")}><div className="font-medium">{mode.label}</div><div className="mt-1 text-xs text-muted-foreground">{mode.sub}</div>{p.desktopMode===mode.v&&<div className="mt-2 text-xs font-medium text-sky-600">Current layout</div>}</button>)}
+              </div>
+              <div className="px-4 pb-2 pt-3"><div className="text-sm font-medium">Your 3 dashboard apps</div><p className="mt-1 text-xs text-muted-foreground">Choose exactly three apps to feature on PS5 and Xbox-style dashboards. Your choice is saved automatically.</p></div>
+              <div className="grid gap-2 p-3 sm:grid-cols-2">
+                {([{id:"web",label:"Browser"},{id:"movies",label:"Movies & TV"},{id:"music",label:"Music"},{id:"ai",label:"Birch AI"},{id:"games",label:"Games"},{id:"notes",label:"Notepad"},{id:"voice",label:"Voice"},{id:"store",label:"App Store"},{id:"memory",label:"Memory"},{id:"settings",label:"Settings"}] as const).map((app) => { const selected=(p.dashboardApps ?? ["web","games","music"]).includes(app.id); return <button key={app.id} onClick={() => { const current=p.dashboardApps ?? ["web","games","music"]; if(selected){if(current.length>1)set({dashboardApps:current.filter((id)=>id!==app.id)});}else if(current.length<3)set({dashboardApps:[...current,app.id]}); else toast("Choose up to three apps. Remove one first."); }} className={cn("flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm transition",selected?"border-sky-500 bg-sky-500/10":"hover:bg-accent")}><span>{app.label}</span><span className={cn("flex size-5 items-center justify-center rounded-md border text-xs",selected?"border-sky-500 bg-sky-500 text-white":"text-muted-foreground")}>{selected?"✓":""}</span></button>; })}
+              </div>
+              <Row title="Selected apps" desc="Exactly three slots are recommended for the console dashboard."><span className="text-xs tabular-nums">{(p.dashboardApps ?? ["web","games","music"]).length} / 3</span></Row>
+              <div className="flex flex-wrap gap-2 p-3"><Button variant="outline" size="sm" onClick={() => {set({desktopMode:"windows",dashboardApps:["web","games","music"],performanceMode:"balanced",reduceMotion:false});toast("Restored the default desktop layout");}}>Restore default layout</Button><Button variant="outline" size="sm" onClick={() => {set({desktopMode:"ps5",dashboardApps:["web","games","music"]});toast("PS5-style layout applied");}}>PS5 preset</Button><Button variant="outline" size="sm" onClick={() => {set({desktopMode:"xbox",dashboardApps:["games","music","movies"]});toast("Xbox-style layout applied");}}>Xbox preset</Button></div>
+            </Card>
             <Card title="Performance">
               <Choice
                 value={p.performanceMode ?? "balanced"}
