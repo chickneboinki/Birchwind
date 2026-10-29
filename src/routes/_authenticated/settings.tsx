@@ -116,6 +116,29 @@ function SettingsPage() {
                 ]}
               />
             </Card>
+            <Card title="Desktop experience">
+              <Choice
+                value={p.desktopMode ?? "windows"}
+                onChange={(desktopMode) => set({ desktopMode })}
+                options={[
+                  { v: "windows", label: "Windows desktop", sub: "Desktop icons, floating windows, and taskbar" },
+                  { v: "ps5", label: "Console · PS5 style", sub: "Controller-friendly, cinematic dashboard" },
+                  { v: "xbox", label: "Console · Xbox style", sub: "Dashboard tiles and quick app access" },
+                ]}
+              />
+            </Card>
+            <Card title="Performance">
+              <Choice
+                value={p.performanceMode ?? "balanced"}
+                onChange={(performanceMode) => set({ performanceMode })}
+                options={[
+                  { v: "performance", label: "Performance", sub: "Less blur, fewer effects, faster response" },
+                  { v: "balanced", label: "Balanced", sub: "Smooth motion with moderate effects" },
+                  { v: "quality", label: "Visual quality", sub: "Richer transparency and desktop effects" },
+                ]}
+              />
+              <Row title="Reduce motion" desc="Disable decorative animations for comfort or extra responsiveness."><Switch checked={p.reduceMotion} onCheckedChange={(reduceMotion) => set({ reduceMotion })} /></Row>
+            </Card>
             <Card title="Home screen">
               <Row title="Title"><Input className="w-44" value={p.homeName} onChange={(e) => set({ homeName: e.target.value })} /></Row>
               <Row title="Tagline"><Input className="w-56" value={p.tagline} onChange={(e) => set({ tagline: e.target.value })} /></Row>
