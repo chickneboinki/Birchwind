@@ -2,6 +2,8 @@ import { useSyncExternalStore } from "react";
 
 export type Prefs = {
   layout: "classic" | "launcher";
+  desktopMode: "windows" | "ps5" | "xbox";
+  performanceMode: "balanced" | "performance" | "quality";
   accent: "star" | "rose" | "ember" | "mint" | "sky" | "violet" | "lime" | "gold" | "coral" | "aqua";
   palette: "default" | "midnight" | "forest" | "ocean" | "sunset" | "mono" | "candy" | "dracula";
   v?: number;
@@ -30,6 +32,8 @@ export type Prefs = {
 
 export const DEFAULT_PREFS: Prefs = {
   layout: "launcher",
+  desktopMode: "windows",
+  performanceMode: "balanced",
   accent: "star",
   palette: "default",
   density: "comfortable",
@@ -117,6 +121,8 @@ function apply() {
   r.dataset["bg"] = state.background;
   if (state.palette === "default") delete r.dataset["theme"]; else r.dataset["theme"] = state.palette;
   r.dataset["density"] = state.density;
+  r.dataset["desktopMode"] = state.desktopMode;
+  r.dataset["performance"] = state.performanceMode;
   r.classList.toggle("reduce-motion", state.reduceMotion);
   document.title = state.tabCloak ? state.cloakTitle : document.title;
 }
