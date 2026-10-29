@@ -41,7 +41,7 @@ function MemoryPage() {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
+    <div className="windows-memory flex h-full flex-col overflow-y-auto">
       <header className="flex h-12 items-center px-3 md:hidden"><MobileMenuButton /></header>
       <div className="mx-auto w-full max-w-2xl px-4 py-8 md:py-14">
         <h1 className="font-display text-4xl">Memory</h1>
