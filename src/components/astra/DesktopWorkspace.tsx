@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AudioLines, Bot, Film, Gamepad2, Globe, Home, Maximize2, Minus, Music, Settings, ShoppingBag, StickyNote, Brain, X, Search, Power, AppWindow } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePrefs } from "@/lib/astra/prefs";
 
 type AppInfo = { id: string; title: string; path: string; icon: typeof Home; color: string };
 const APPS: AppInfo[] = [
@@ -27,6 +28,7 @@ function initialApp(): AppInfo | undefined {
 }
 
 export function DesktopWorkspace() {
+  const prefs = usePrefs();
   const [windows, setWindows] = useState<WindowState[]>(() => {
     const app = initialApp();
     return app ? [{ id: nextWindowId++, app, x: 100, y: 44, w: 900, h: 610, z: 2, minimized: false, maximized: false }] : [];
@@ -36,19 +38,37 @@ export function DesktopWorkspace() {
   const [search, setSearch] = useState("");
   const [clock, setClock] = useState(() => new Date());
   const [drag, setDrag] = useState<{ id: number; x: number; y: number; left: number; top: number } | null>(null);
+  const [resize, setResize] = useState<{ id: number; edge: string; x: number; y: number; left: number; top: number; w: number; h: number } | null>(null);
   const active = useMemo(() => windows.filter((w) => !w.minimized).sort((a, b) => b.z - a.z)[0]?.id, [windows]);
   useEffect(() => {
     const t = window.setInterval(() => setClock(new Date()), 15000);
     return () => window.clearInterval(t);
   }, []);
   useEffect(() => {
-    if (!drag) return;
-    const move = (e: PointerEvent) => setWindows((old) => old.map((w) => w.id === drag.id && !w.maximized ? { ...w, x: Math.max(0, Math.min(window.innerWidth - 260, drag.left + e.clientX - drag.x)), y: Math.max(0, Math.min(window.innerHeight - 120, drag.top + e.clientY - drag.y)) } : w));
-    const up = () => setDrag(null);
+    if (!drag && !resize) return;
+    const move = (e: PointerEvent) => {
+      if (drag) setWindows((old) => old.map((w) => w.id === drag.id && !w.maximized ? { ...w, x: Math.max(0, Math.min(window.innerWidth - 260, drag.left + e.clientX - drag.x)), y: Math.max(0, Math.min(window.innerHeight - 120, drag.top + e.clientY - drag.y)) } : w));
+      if (resize) setWindows((old) => old.map((w) => {
+        if (w.id !== resize.id || w.maximized) return w;
+        const dx=e.clientX-resize.x, dy=e.clientY-resize.y;
+        let x=resize.left, y=resize.top, width=resize.w, height=resize.h;
+        if (resize.edge.includes("e")) width=Math.max(340,resize.w+dx);
+        if (resize.edge.includes("s")) height=Math.max(260,resize.h+dy);
+        if (resize.edge.includes("w")) { width=Math.max(340,resize.w-dx); x=resize.left+resize.w-width; }
+        if (resize.edge.includes("n")) { height=Math.max(260,resize.h-dy); y=resize.top+resize.h-height; }
+        return {...w,x:Math.max(0,x),y:Math.max(0,y),w:Math.min(window.innerWidth,width),h:Math.min(window.innerHeight-58,height)};
+      }));
+    };
+    const up = (e: PointerEvent) => {
+      if (drag && e.clientY < 12) setWindows((old) => old.map((w) => w.id===drag.id ? {...w,maximized:true}:w));
+      else if (drag && e.clientX < 12) setWindows((old) => old.map((w) => w.id===drag.id ? {...w,x:8,y:8,w:Math.floor(window.innerWidth/2)-12,h:window.innerHeight-82,maximized:false}:w));
+      else if (drag && e.clientX > window.innerWidth-12) setWindows((old) => old.map((w) => w.id===drag.id ? {...w,x:Math.floor(window.innerWidth/2),y:8,w:Math.floor(window.innerWidth/2)-8,h:window.innerHeight-82,maximized:false}:w));
+      setDrag(null); setResize(null);
+    };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
     return () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-  }, [drag]);
+  }, [drag, resize]);
   const openApp = (app: AppInfo, query?: string) => {
     const targetSrc = app.path + (query ? `?q=${encodeURIComponent(query)}&window=1` : "?window=1");
     const existing = windows.find((w) => w.app.id === app.id && !w.minimized);
@@ -65,7 +85,7 @@ export function DesktopWorkspace() {
   };
   const focus = (id: number) => { setWindows((old) => old.map((w) => w.id === id ? { ...w, z: nextZ, minimized: false } : w)); setNextZ((z) => z + 1); };
   const filteredApps = APPS.filter((a) => a.title.toLowerCase().includes(search.toLowerCase()));
-  return <div className="windows-shell relative h-dvh w-full select-none overflow-hidden bg-[#0b1827] text-white">
+  return <div data-desktop-mode={prefs.desktopMode ?? "windows"} data-performance={prefs.performanceMode ?? "balanced"} className={cn("windows-shell relative h-dvh w-full select-none overflow-hidden bg-[#0b1827] text-white", prefs.reduceMotion && "reduce-motion")}>
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_18%_22%,rgba(31,112,170,.38),transparent_42%),radial-gradient(ellipse_at_78%_78%,rgba(26,95,109,.32),transparent_42%),linear-gradient(135deg,#081421,#122b40_52%,#07111d)]" />
     <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.04)_1px,transparent_1px)] [background-size:44px_44px]" />
     <div className="absolute left-4 top-4 z-10 grid grid-cols-1 gap-2">
@@ -81,6 +101,7 @@ export function DesktopWorkspace() {
           <button title={w.maximized ? "Restore" : "Maximize"} onClick={() => setWindows((old) => old.map((x) => x.id === w.id ? { ...x, maximized: !x.maximized } : x))} className="flex h-9 w-10 items-center justify-center hover:bg-slate-200"><Maximize2 className="size-3.5" /></button>
           <button title="Close" onClick={() => setWindows((old) => old.filter((x) => x.id !== w.id))} className="flex h-9 w-11 items-center justify-center hover:bg-red-500 hover:text-white"><X className="size-4" /></button>
         </header>
+        {!w.maximized && <>{["n","s","e","w","ne","nw","se","sw"].map((edge) => <div key={edge} onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); focus(w.id); setResize({id:w.id,edge,x:e.clientX,y:e.clientY,left:w.x,top:w.y,w:w.w,h:w.h}); }} className={cn("window-resize-handle", `resize-${edge}`)} />)}</>}
         <div className="min-h-0 flex-1 bg-background"><iframe title={w.app.title} src={w.src ?? (w.app.path + "?window=1")} className="size-full border-0 bg-background" allow="autoplay; fullscreen; clipboard-read; clipboard-write" /></div>
       </section>;
     })}
