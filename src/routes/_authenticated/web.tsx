@@ -106,7 +106,7 @@ function Web() {
                 <button onClick={() => { patch(tab.id, { url: r.url, title: r.title }); setInput(r.url); }} className="text-left text-base text-star hover:underline">{r.title}</button>
                 <div className="truncate text-xs text-muted-foreground">{r.url}</div>
                 <p className="mt-1 text-sm">{r.snippet}</p>
-              </div>
+              </article>
             ))}
           </div>
         ) : (
