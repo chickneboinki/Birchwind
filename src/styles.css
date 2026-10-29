@@ -239,41 +239,49 @@ html[data-theme="dracula"] { --background: oklch(0.18 0.03 290); --foreground: o
 }
 
 
-/* Birchwind polish: tactile surfaces, calm motion, and a subtle ambient game-center glow. */
-:root {
-  --bw-ease: cubic-bezier(.2,.75,.25,1);
-  --bw-glass: color-mix(in oklab, var(--background) 76%, transparent);
+
+/* Windows desktop polish only — keep app pages unchanged. */
+.windows-shell {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(56, 146, 210, .18), transparent 42%),
+    radial-gradient(ellipse at 82% 78%, rgba(61, 168, 174, .12), transparent 40%),
+    linear-gradient(135deg, #081421, #122b40 52%, #07111d);
 }
-html { scroll-behavior: smooth; }
-body { text-rendering: optimizeLegibility; }
-button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
-button, a { transition: color .18s var(--bw-ease), background-color .18s var(--bw-ease), border-color .18s var(--bw-ease), box-shadow .22s var(--bw-ease), transform .22s var(--bw-ease); }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--ring) 78%, white);
-  outline-offset: 3px;
+.windows-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .22;
+  background-image: radial-gradient(rgba(255,255,255,.45) .7px, transparent .7px);
+  background-size: 29px 29px;
+  mask-image: linear-gradient(180deg, black, transparent 90%);
 }
-::selection { background: color-mix(in oklab, var(--star) 40%, transparent); }
-.bw-glass { background: var(--bw-glass); backdrop-filter: blur(22px) saturate(140%); -webkit-backdrop-filter: blur(22px) saturate(140%); }
-.bw-games { background: radial-gradient(ellipse at 8% 0%, rgba(42,115,175,.10), transparent 42%), radial-gradient(ellipse at 95% 55%, rgba(112,75,180,.08), transparent 42%), var(--background); }
-.bw-games-hero { isolation: isolate; background: linear-gradient(115deg, #0c1b2d 0%, #111d35 52%, #211c3d 100%); box-shadow: 0 20px 70px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.07); }
-.bw-games-hero::after { content: ""; position: absolute; inset: 0; z-index: 0; opacity: .3; pointer-events: none; background-image: radial-gradient(rgba(255,255,255,.28) .65px, transparent .65px); background-size: 19px 19px; mask-image: linear-gradient(90deg, black, transparent 85%); }
-.bw-orb { position: absolute; border-radius: 9999px; filter: blur(2px); pointer-events: none; }
-.bw-orb-one { width: 340px; height: 340px; right: 12%; top: -240px; background: radial-gradient(circle, rgba(54,190,255,.24), transparent 68%); animation: bw-float 9s ease-in-out infinite; }
-.bw-orb-two { width: 280px; height: 280px; right: -60px; bottom: -230px; background: radial-gradient(circle, rgba(166,102,255,.28), transparent 70%); animation: bw-float 11s ease-in-out infinite reverse; }
-.bw-hero-mark { position: absolute; right: 7%; top: 50%; z-index: 0; display: grid; place-items: center; transform: translateY(-50%) rotate(-12deg); color: rgba(160,210,255,.08); }
-.bw-hero-mark svg { width: clamp(130px, 24vw, 280px); height: auto; stroke-width: .75; }
-.bw-game-card { box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 8px 28px rgba(0,0,0,.08); will-change: transform; }
-.bw-game-card:hover { transform: translateY(-3px); border-color: rgba(147,197,253,.3); box-shadow: 0 18px 38px rgba(0,0,0,.18), 0 0 0 1px rgba(147,197,253,.06); }
-.bw-game-card:active { transform: translateY(-1px) scale(.995); }
-.bw-icon-btn { display: inline-flex; min-width: 36px; min-height: 36px; align-items: center; justify-content: center; border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent); border-radius: 11px; background: color-mix(in oklab, var(--foreground) 4%, transparent); color: var(--foreground); }
-.bw-icon-btn:hover { background: color-mix(in oklab, var(--foreground) 9%, transparent); border-color: color-mix(in oklab, var(--foreground) 18%, transparent); }
-.bw-icon-btn:active { transform: scale(.96); }
-@keyframes bw-float { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-18px,16px,0) scale(1.08); } }
-@media (prefers-reduced-motion: no-preference) {
-  .windows-taskbar { backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); }
-  .windows-start-button:hover { transform: translateY(-1px); }
+.windows-shell .desktop-app-icon { transition: transform .2s cubic-bezier(.2,.75,.25,1), background .2s ease; }
+.windows-shell .desktop-app-icon:hover { transform: translateY(-3px); }
+.windows-shell .desktop-window {
+  animation: desktop-window-in .2s cubic-bezier(.2,.75,.25,1) both;
+  transform-origin: center bottom;
+}
+.windows-shell .windows-start-panel {
+  animation: desktop-window-in .18s cubic-bezier(.2,.75,.25,1) both;
+  transform-origin: bottom center;
+}
+.windows-shell .windows-taskbar {
+  background: rgba(11, 24, 39, .78);
+  backdrop-filter: blur(28px) saturate(1.35);
+  -webkit-backdrop-filter: blur(28px) saturate(1.35);
+}
+.windows-shell button { -webkit-tap-highlight-color: transparent; }
+.windows-shell button:active { transition-duration: .08s; }
+@keyframes desktop-window-in {
+  from { opacity: 0; transform: translateY(8px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  .windows-shell *, .windows-shell *::before, .windows-shell *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
 }
