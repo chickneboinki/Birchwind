@@ -82,8 +82,12 @@ function rewriteHtml(html: string, base: string, self: string, token: string): s
 
 async function handle({ request }: { request: Request }) {
   const url = new URL(request.url);
-  if (!(await authorizedUser(request, url))) return new Response("Unauthorized", { status: 401 });
   const token = url.searchParams.get("token") || "";
+  // Catalog metadata and TMDB artwork are public data. Require a valid session
+  // only for the external embed relay, which fetches arbitrary remote pages.
+  if (url.searchParams.has("embed") && !(await authorizedUser(request, url))) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   const self = `${url.origin}/api/movies`;
 
   // --- TMDB API data ---
