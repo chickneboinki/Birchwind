@@ -126,7 +126,7 @@ async function handle({ request }: { request: Request }) {
     }
     case "art": {
       const src = url.searchParams.get("src") ?? "";
-      if (!/^https:\/\/([a-z0-9-]+\.)*(dzcdn\.net|deezer\.com|mzstatic\.com)\//i.test(src)) return new Response("Bad url", { status: 400 });
+      if (!/^https:\/\/([a-z0-9-]+\.)*(dzcdn\.net|deezer\.com|mzstatic\.com|audius\.co)\//i.test(src)) return new Response("Bad url", { status: 400 });
       const r = await fetch(src);
       return new Response(r.body, { status: r.status, headers: { "content-type": r.headers.get("content-type") ?? "image/jpeg", "cache-control": "private, max-age=86400" } });
     }
