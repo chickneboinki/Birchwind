@@ -36,7 +36,7 @@ function Games() {
   const choose = (m: Mode) => { localStorage.setItem("astra-games-mode", m); setMode(m); };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="windows-games flex h-full flex-col">
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-3">
         <MobileMenuButton />
         <h1 className="font-display text-xl">Games</h1>
