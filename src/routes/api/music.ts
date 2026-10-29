@@ -83,7 +83,7 @@ async function audiusCatalog(q?: string): Promise<any[]> {
     artistId: "",
     album: t.release_title ?? "",
     albumId: "",
-    art: t.artwork?.\"480x480\" ?? t.artwork?.\"150x150\" ?? "",
+    art: t.artwork?.["480x480"] ?? t.artwork?.["150x150"] ?? "",
     duration: Math.max(0, Math.floor(t.duration ?? 0)),
     preview: "",
   }));
