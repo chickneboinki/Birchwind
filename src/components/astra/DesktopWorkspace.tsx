@@ -41,6 +41,11 @@ export function DesktopWorkspace() {
   const [resize, setResize] = useState<{ id: number; edge: string; x: number; y: number; left: number; top: number; w: number; h: number } | null>(null);
   const active = useMemo(() => windows.filter((w) => !w.minimized).sort((a, b) => b.z - a.z)[0]?.id, [windows]);
   useEffect(() => {
+    document.documentElement.dataset.desktopMode = prefs.desktopMode ?? "windows";
+    document.documentElement.dataset.performance = prefs.performanceMode ?? "balanced";
+    document.documentElement.classList.toggle("reduce-motion", prefs.reduceMotion);
+  }, [prefs.desktopMode, prefs.performanceMode, prefs.reduceMotion]);
+  useEffect(() => {
     const t = window.setInterval(() => setClock(new Date()), 15000);
     return () => window.clearInterval(t);
   }, []);
