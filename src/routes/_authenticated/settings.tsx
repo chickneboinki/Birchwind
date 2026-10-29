@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type ReactNode } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Search, LayoutGrid, Palette, Sparkles, Globe, ShieldCheck, Bot, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { getModelStatus } from "@/lib/astra/status.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,23 +72,37 @@ function Choice<T extends string>({ value, options, onChange }: { value: T; opti
 function SettingsPage() {
   const p = usePrefs();
   const [tab, setTab] = useState<TabName>("Layout");
+  const [settingsSearch, setSettingsSearch] = useState("");
   const set = (x: Partial<Prefs>) => setPrefs(x);
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
       <header className="flex h-12 items-center px-3 md:hidden"><MobileMenuButton /></header>
-      <div className="mx-auto w-full max-w-2xl px-4 py-8 md:py-14">
-        <div className="flex items-end justify-between">
-          <h1 className="font-display text-4xl">Settings</h1>
-          <Button variant="ghost" size="sm" onClick={() => { resetPrefs(); toast("Settings reset"); }}>Reset all</Button>
-        </div>
-        <div className="mt-6 flex gap-1 overflow-x-auto rounded-lg border p-1">
-          {TABS.map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={cn("shrink-0 rounded-md px-3 py-1.5 text-sm", tab === t ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground")}>
-              {t}
-            </button>
-          ))}
-        </div>
+      <div className="windows-settings mx-auto flex w-full max-w-7xl flex-1 flex-col gap-5 px-4 py-4 md:flex-row md:gap-8 md:px-8 md:py-7">
+        <aside className="windows-settings-nav w-full shrink-0 md:w-64">
+          <div className="mb-4 flex items-center gap-3 px-2">
+            <span className="flex size-11 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-500"><Settings2 className="size-6" /></span>
+            <div><div className="text-lg font-semibold tracking-tight">Settings</div><div className="text-xs text-muted-foreground">Birchwind system</div></div>
+          </div>
+          <label className="mb-4 flex items-center gap-2 rounded-xl border bg-background/75 px-3 py-2.5 shadow-sm">
+            <Search className="size-4 text-muted-foreground" />
+            <input value={settingsSearch} onChange={(e) => setSettingsSearch(e.target.value)} placeholder="Find a setting" className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
+            <kbd className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">⌘K</kbd>
+          </label>
+          <nav className="flex gap-1 overflow-x-auto md:flex-col">
+            {TABS.filter((t) => !settingsSearch.trim() || t.toLowerCase().includes(settingsSearch.toLowerCase())).map((t) => {
+              const Icon = t === "Layout" ? LayoutGrid : t === "Appearance" ? Palette : t === "Essences" ? Sparkles : t === "Proxy" ? Globe : t === "Privacy" ? ShieldCheck : Bot;
+              return <button key={t} onClick={() => setTab(t)} className={cn("flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition", tab === t ? "bg-sky-500/12 font-medium text-sky-600 dark:text-sky-300" : "text-muted-foreground hover:bg-accent hover:text-foreground")}><Icon className="size-[18px]" />{t === "Essences" ? "Personalization" : t === "Proxy" ? "Network & browser" : t === "AI" ? "AI & accounts" : t}</button>;
+            })}
+          </nav>
+          {settingsSearch && !TABS.some((t) => t.toLowerCase().includes(settingsSearch.toLowerCase())) && <p className="px-3 py-3 text-xs text-muted-foreground">No categories match “{settingsSearch}”. Try appearance, privacy, proxy, or AI.</p>}
+          <div className="mt-5 hidden rounded-2xl border bg-card/70 p-3 md:block"><div className="text-xs font-medium">Birchwind is up to date</div><div className="mt-1 text-xs text-muted-foreground">Your preferences save as you change them.</div></div>
+        </aside>
+        <main className="min-w-0 flex-1 pb-8">
+          <div className="windows-settings-heading mb-5 flex items-center justify-between gap-4 rounded-2xl border bg-card/65 px-5 py-4">
+            <div><p className="text-xs font-medium uppercase tracking-[.16em] text-sky-600 dark:text-sky-300">System preferences</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{tab === "Essences" ? "Personalization" : tab === "Proxy" ? "Network & browser" : tab === "AI" ? "AI & accounts" : tab}</h1><p className="mt-1 text-sm text-muted-foreground">Make Birchwind feel like your own desktop.</p></div>
+            <Button variant="outline" size="sm" onClick={() => { resetPrefs(); toast("Settings reset"); }}>Reset all</Button>
+          </div>
 
         {tab === "Layout" && (
           <>
@@ -199,6 +213,7 @@ function SettingsPage() {
         )}
 
         {tab === "AI" && <AISettings />}
+        </main>
       </div>
     </div>
   );
