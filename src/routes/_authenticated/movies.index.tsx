@@ -95,7 +95,7 @@ function Movies() {
   }, [q]);
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="windows-movies h-full overflow-y-auto">
       <WatchModePrompt />
       <header className="sticky top-0 z-20 grid h-16 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 border-b border-border bg-background/90 px-3 backdrop-blur sm:px-6">
         <MobileMenuButton />
