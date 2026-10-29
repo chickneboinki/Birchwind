@@ -42,7 +42,7 @@ function AppStore() {
   }), [query, filter, installed]);
 
   return (
-    <div className="h-full overflow-y-auto bg-background px-5 py-6 sm:px-8 sm:py-8">
+    <div className="windows-store h-full overflow-y-auto bg-background px-5 py-6 sm:px-8 sm:py-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
           <div>
