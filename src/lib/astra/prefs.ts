@@ -4,6 +4,7 @@ export type Prefs = {
   layout: "classic" | "launcher";
   desktopMode: "windows" | "ps5" | "xbox";
   performanceMode: "balanced" | "performance" | "quality";
+  dashboardApps: string[];
   accent: "star" | "rose" | "ember" | "mint" | "sky" | "violet" | "lime" | "gold" | "coral" | "aqua";
   palette: "default" | "midnight" | "forest" | "ocean" | "sunset" | "mono" | "candy" | "dracula";
   v?: number;
@@ -34,6 +35,7 @@ export const DEFAULT_PREFS: Prefs = {
   layout: "launcher",
   desktopMode: "windows",
   performanceMode: "balanced",
+  dashboardApps: ["web", "games", "music"],
   accent: "star",
   palette: "default",
   density: "comfortable",
