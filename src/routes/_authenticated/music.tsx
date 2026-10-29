@@ -200,7 +200,7 @@ function Music() {
   const H = ({ children }: { children: React.ReactNode }) => <h2 className="mt-8 font-display text-2xl">{children}</h2>;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="windows-music flex h-full flex-col">
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-3">
         <MobileMenuButton />
         {stack.length > 0 && <button onClick={back} className="rounded-md p-1.5 hover:bg-accent" aria-label="Back"><ArrowLeft className="size-4" /></button>}
