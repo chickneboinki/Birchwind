@@ -87,7 +87,7 @@ function SettingsPage() {
           <label className="mb-4 flex items-center gap-2 rounded-xl border bg-background/75 px-3 py-2.5 shadow-sm">
             <Search className="size-4 text-muted-foreground" />
             <input value={settingsSearch} onChange={(e) => setSettingsSearch(e.target.value)} placeholder="Find a setting" className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
-            <kbd className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">⌘K</kbd>
+            
           </label>
           <nav className="flex gap-1 overflow-x-auto md:flex-col">
             {TABS.filter((t) => !settingsSearch.trim() || t.toLowerCase().includes(settingsSearch.toLowerCase())).map((t) => {
