@@ -68,8 +68,8 @@ function Web() {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center gap-1 overflow-x-auto border-b px-2 pt-2">
+    <div className="windows-browser flex h-full flex-col">
+      <div className="windows-browser-tabs flex items-center gap-1 overflow-x-auto border-b px-2 pt-2">
         <MobileMenuButton />
         {tabs.map((t) => (
           <div key={t.id} className={cn("group flex max-w-48 shrink-0 items-center gap-1.5 rounded-t-md border border-b-0 px-3 py-1.5 text-xs", t.id === tab.id ? "bg-card" : "text-muted-foreground")}>
@@ -81,7 +81,7 @@ function Web() {
         ))}
         <button onClick={newTab} className="rounded p-1.5 text-muted-foreground hover:bg-accent" aria-label="New tab"><Plus className="size-4" /></button>
       </div>
-      <form onSubmit={go} className="flex items-center gap-2 border-b bg-card px-3 py-2">
+      <form onSubmit={go} className="windows-browser-address flex items-center gap-2 border-b bg-card/80 px-3 py-3 backdrop-blur-xl">
         <Search className="size-4 text-muted-foreground" />
         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search the web or type a website address"
           className="flex-1 bg-transparent text-sm outline-none" />
@@ -99,10 +99,10 @@ function Web() {
         ) : tab.loading ? (
           <p className="p-6 text-sm text-muted-foreground">Searching…</p>
         ) : tab.results ? (
-          <div className="mx-auto max-w-2xl space-y-5 px-4 py-6">
+          <div className="windows-search-results mx-auto max-w-3xl space-y-3 px-4 py-6">
             {tab.results.length === 0 && <p className="text-sm text-muted-foreground">No results.</p>}
             {tab.results.map((r) => (
-              <div key={r.url}>
+              <article key={r.url} className="windows-search-result rounded-2xl border bg-card/70 p-4 transition hover:border-sky-400/40 hover:shadow-md">
                 <button onClick={() => { patch(tab.id, { url: r.url, title: r.title }); setInput(r.url); }} className="text-left text-base text-star hover:underline">{r.title}</button>
                 <div className="truncate text-xs text-muted-foreground">{r.url}</div>
                 <p className="mt-1 text-sm">{r.snippet}</p>
@@ -110,7 +110,7 @@ function Web() {
             ))}
           </div>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
+          <div className="windows-search-empty flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
             <h1 className="font-display text-4xl">Search anything</h1>
             <p className="text-sm text-muted-foreground">Open as many tabs as you like.</p>
           </div>
