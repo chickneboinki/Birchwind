@@ -43,10 +43,10 @@ export const DEFAULT_PREFS: Prefs = {
   showClock: true,
   openLinksInNewTab: false,
   searchEngine: "google",
-  proxyEnabled: false,
+  proxyEnabled: true,
   proxyGames: false,
   wisp: "",
-  transport: "astra",
+  transport: "epoxy",
   identity: "mirror",
   userAgent: "default",
   tabCloak: false,
@@ -90,6 +90,13 @@ function load() {
   try {
     state = { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
     if (!state.v) { if (state.searchEngine === "astra") state.searchEngine = "google"; state.v = 1; }
+    // v2: the old "astra" transport had no WebSocket relay route, so proxy pages
+    // could start but never establish their required network connections.
+    if ((state.v ?? 1) < 2) {
+      state.proxyEnabled = true;
+      state.transport = "epoxy";
+      state.v = 2;
+    }
   } catch { /* ignore */ }
   apply();
 }
