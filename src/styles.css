@@ -285,3 +285,31 @@ html[data-theme="dracula"] { --background: oklch(0.18 0.03 290); --foreground: o
     transition-duration: .01ms !important;
   }
 }
+
+/* Standalone Windows-style app surfaces */
+.windows-settings { animation: bw-page-in .24s cubic-bezier(.2,.75,.25,1) both; }
+.windows-settings-nav { align-self: flex-start; }
+.windows-settings-nav nav button { min-height: 42px; }
+.windows-settings-heading { box-shadow: 0 8px 28px rgba(0,0,0,.035); }
+.windows-settings section { margin-top: 1.4rem; }
+.windows-settings section > h2 { margin-bottom: .55rem; padding-left: .15rem; color: var(--muted-foreground); font-size: .7rem; letter-spacing: .12em; }
+.windows-settings section > div.mt-2 { overflow: hidden; border-radius: 1rem; background: color-mix(in oklab, var(--card) 82%, transparent); box-shadow: 0 5px 24px rgba(0,0,0,.025); }
+.windows-settings section > div.mt-2 > div { min-height: 56px; }
+.windows-settings section button { transition: background-color .16s ease, border-color .16s ease, transform .16s ease; }
+.windows-home { position: relative; isolation: isolate; }
+.windows-home-title { background: linear-gradient(110deg, var(--foreground), color-mix(in oklab, #60a5fa 80%, var(--foreground)) 70%, var(--foreground)); background-clip: text; -webkit-background-clip: text; color: transparent; }
+.windows-search-box { border-color: color-mix(in oklab, var(--foreground) 12%, transparent); box-shadow: 0 16px 48px rgba(0,0,0,.08), inset 0 1px rgba(255,255,255,.05); transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.windows-search-box:focus-within { border-color: rgba(56, 149, 232, .7); box-shadow: 0 0 0 4px rgba(56,149,232,.11), 0 18px 50px rgba(0,0,0,.1); transform: translateY(-1px); }
+.windows-home-app { animation: bw-page-in .3s cubic-bezier(.2,.75,.25,1) both; }
+.windows-browser-tabs { background: color-mix(in oklab, var(--card) 65%, var(--background)); }
+.windows-browser-address { box-shadow: 0 4px 20px rgba(0,0,0,.025); }
+.windows-search-result { animation: bw-page-in .24s cubic-bezier(.2,.75,.25,1) both; }
+.windows-search-result > button { color: color-mix(in oklab, #60a5fa 85%, var(--foreground)); font-weight: 600; }
+.windows-search-result > div { margin-top: .25rem; color: #4ca36d; }
+@keyframes bw-page-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 767px) {
+  .windows-settings-nav { position: relative; }
+  .windows-settings-nav nav { padding-bottom: .25rem; }
+  .windows-settings-heading { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .windows-settings, .windows-home-app, .windows-search-result { animation: none; } }
