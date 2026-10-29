@@ -16,7 +16,7 @@ const APPS: AppInfo[] = [
   { id: "memory", title: "Memory", path: "/memory", icon: Brain, color: "text-indigo-300" },
   { id: "settings", title: "Settings", path: "/settings", icon: Settings, color: "text-slate-200" },
 ];
-type WindowState = { id: number; app: AppInfo; x: number; y: number; w: number; h: number; z: number; minimized: boolean; maximized: boolean };
+type WindowState = { id: number; app: AppInfo; src?: string; x: number; y: number; w: number; h: number; z: number; minimized: boolean; maximized: boolean };
 let nextWindowId = 1;
 
 function initialApp(): AppInfo | undefined {
@@ -49,16 +49,17 @@ export function DesktopWorkspace() {
     window.addEventListener("pointerup", up);
     return () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
   }, [drag]);
-  const openApp = (app: AppInfo) => {
+  const openApp = (app: AppInfo, query?: string) => {
+    const targetSrc = app.path + (query ? `?q=${encodeURIComponent(query)}&window=1` : "?window=1");
     const existing = windows.find((w) => w.app.id === app.id && !w.minimized);
     if (existing) {
-      setWindows((old) => old.map((w) => w.id === existing.id ? { ...w, z: nextZ } : w));
+      setWindows((old) => old.map((w) => w.id === existing.id ? { ...w, z: nextZ, ...(query ? { src: targetSrc } : {}) } : w));
       setNextZ((z) => z + 1);
       setStartOpen(false);
       return;
     }
     const id = nextWindowId++;
-    setWindows((old) => [...old, { id, app, x: Math.max(16, 80 + old.length * 28), y: Math.max(16, 35 + old.length * 24), w: Math.min(980, Math.max(340, window.innerWidth - 90)), h: Math.min(680, Math.max(300, window.innerHeight - 130)), z: nextZ, minimized: false, maximized: false }]);
+    setWindows((old) => [...old, { id, app, src: targetSrc, x: Math.max(16, 80 + old.length * 28), y: Math.max(16, 35 + old.length * 24), w: Math.min(980, Math.max(340, window.innerWidth - 90)), h: Math.min(680, Math.max(300, window.innerHeight - 130)), z: nextZ, minimized: false, maximized: false }]);
     setNextZ((z) => z + 1);
     setStartOpen(false);
   };
@@ -80,11 +81,11 @@ export function DesktopWorkspace() {
           <button title={w.maximized ? "Restore" : "Maximize"} onClick={() => setWindows((old) => old.map((x) => x.id === w.id ? { ...x, maximized: !x.maximized } : x))} className="flex h-9 w-10 items-center justify-center hover:bg-slate-200"><Maximize2 className="size-3.5" /></button>
           <button title="Close" onClick={() => setWindows((old) => old.filter((x) => x.id !== w.id))} className="flex h-9 w-11 items-center justify-center hover:bg-red-500 hover:text-white"><X className="size-4" /></button>
         </header>
-        <div className="min-h-0 flex-1 bg-background"><iframe title={w.app.title} src={w.app.path + (w.app.path.includes("?") ? "&" : "?") + "window=1"} className="size-full border-0 bg-background" allow="autoplay; fullscreen; clipboard-read; clipboard-write" /></div>
+        <div className="min-h-0 flex-1 bg-background"><iframe title={w.app.title} src={w.src ?? (w.app.path + "?window=1")} className="size-full border-0 bg-background" allow="autoplay; fullscreen; clipboard-read; clipboard-write" /></div>
       </section>;
     })}
     {startOpen && <div className="windows-start-panel absolute bottom-[70px] left-1/2 z-[1000] w-[min(92vw,520px)] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/20 bg-[#172536]/95 p-4 shadow-2xl backdrop-blur-2xl">
-      <label className="mb-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2"><Search className="size-4 text-white/60" /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search apps" className="w-full bg-transparent text-sm outline-none placeholder:text-white/50" /></label>
+      <form onSubmit={(e) => { e.preventDefault(); const q = search.trim(); if (!q) return; const match = APPS.find((a) => a.title.toLowerCase() === q.toLowerCase() || a.title.toLowerCase().includes(q.toLowerCase())); if (match) openApp(match); else openApp(APPS.find((a) => a.id === "web")!, q); }} className="mb-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2.5 focus-within:border-sky-300/60"><Search className="size-4 shrink-0 text-white/60" /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search apps, settings, or the web" className="w-full bg-transparent text-sm outline-none placeholder:text-white/50" /><kbd className="hidden rounded border border-white/15 px-1.5 py-0.5 text-[10px] text-white/50 sm:inline">↵</kbd></form>
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">{filteredApps.map((app) => { const Icon = app.icon; return <button key={app.id} onClick={() => openApp(app)} className="flex flex-col items-center gap-2 rounded-xl p-3 text-xs hover:bg-white/10"><span className="flex size-11 items-center justify-center rounded-xl bg-white/10"><Icon className={cn("size-5", app.color)} /></span>{app.title}</button>; })}</div>
       <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-xs text-white/60"><span>Birchwind desktop</span><button onClick={() => { window.location.href = "/auth"; }} className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-white/10"><Power className="size-3.5" /> Sign out</button></div>
     </div>}
